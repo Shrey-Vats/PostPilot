@@ -210,3 +210,26 @@ export const updateUser = async (req, res) => {
     });
   }
 };
+
+export const getAllUsers = async (req, res) => {
+  try {
+    if (req.user.role !== "admin") {
+      return res.status(402).json({
+        message:
+          "You are not admin. Don't try else, I leaked Your IP in dark web",
+        success: false,
+      });
+    }
+
+    const users = User.find().select("-password");
+
+    return res
+      .status(200)
+      .json({ message: "All user has been send", data: users, success: true });
+  } catch (error) {
+    return res.status(500).json({
+      message: "failed during giving all users",
+      success: false,
+    });
+  }
+};
