@@ -3,6 +3,7 @@ import User from '../models/user.js'
 import bcrypt from 'bcrypt'
 import { sendEmail } from "../utils/mailer.js";
 import jwt from 'jsonwebtoken'
+import { inngest } from "../inngest/client.js";
 
 export const Signup = async (req, res) => {
     try {
@@ -20,18 +21,30 @@ export const Signup = async (req, res) => {
         const salt = await bcrypt.genSalt(10)
         const hashedPassword = await bcrypt.hash(password, salt)
 
-        const newUser = new User({
-            email,
-            password: hashedPassword,
+        const newUser = await User.create({
+          email,
+          password: hashedPassword
         })
 
-        const savedUser = await newUser.save()
+        await inngest.send({
+          name: "user/signup",
+          data: {
+            email
+          }
+        })
 
-        // sendEmail(email) logic here
+        const token = jwt.sign(
+          {
+            userId: user._id.toString(),
+            email: user.email,
+          },
+          process.env.JWT_SECRET
+        );
 
         return res.status(200).json({
             message: "successfuly user created",
-            success: true
+            success: true,
+            token
         })
 
     } catch (error) {
@@ -71,13 +84,60 @@ export const Login = async (req, res) => {
       process.env.JWT_SECRET
     );
 
-    
+    // res.cookie("token", token, {
+    //   httpOnly: true, 
+    //   maxAge: 24 * 60 * 60 * 1000 * 29, // 29 day
+    // });
+
+
+
+    res.status(200).json({
+      message: "Login Successfuly",
+      success: "true",
+      token
+    })
   
 
   } catch (error) {
     return res.status(500).json({
         message: "Error during Login,", error,
         success: false
+    })
+  }
+}
+
+export const Loginout = async (req, res) => {
+  try {
+    // res.clearCookie("token");
+
+    // return res.status(200).json({
+    //   message: "Logout successfuly",
+    //   success: true,
+    // });
+
+    const token = req.headers.authorization.split(" ")[1]
+
+    if(!token){
+      return res.status(401).json({
+        message: "Unauthorize",
+        success: false
+      })
+    }
+
+    jwt.verify(token, process.env.JWT_SECRET, (err, decorded)=>{
+      if(err) return res.status(400).json({message: "Invalid token", success:false})
+
+        return res.status(200).json({
+          message: "Logout successful",
+          success: false
+        })
+    })
+
+  } catch (error) {
+    return res.status(500).json({
+      message: "Lougout failed, Try again",
+      error: error,
+      success: false
     })
   }
 }
