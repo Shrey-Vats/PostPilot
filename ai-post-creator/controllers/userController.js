@@ -106,7 +106,7 @@ export const Login = async (req, res) => {
   }
 }
 
-export const Loginout = async (req, res) => {
+export const Logout = async (req, res) => {
   try {
     // res.clearCookie("token");
 
@@ -137,6 +137,34 @@ export const Loginout = async (req, res) => {
     return res.status(500).json({
       message: "Lougout failed, Try again",
       error: error,
+      success: false
+    })
+  }
+}
+
+export const profile = async (req, res) => {
+  const decorded = req.user
+
+  try {
+    const user = await User.findOne({ _id: decorded.userId }).select(
+      "-password"
+    );
+
+    if (!user) {
+      res.status(404).json({
+        message: "user no longer exits",
+        success: false,
+      });
+    }
+
+    res.status(200).json({
+      message: "User Informations:",
+      user,
+      success: true,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Invalid User",
       success: false
     })
   }
