@@ -76,7 +76,7 @@ export const onUserSigningUp = inngest.createFunction(
     {event: "user/signing-up"},
     async ({event, step}) => {
         try {
-            const {email, link} = event.data
+            const {email, key} = event.data
 
             const user = await step.run("get-user-email", async () => {
                 const userObject = await User.findOne({email})
@@ -135,6 +135,7 @@ export const onUserSigningUp = inngest.createFunction(
                   };
                   
                 const subject = "Verify your email to activate PostPilot"
+                const link = process.env.APP_URL + "/verifyemail?token=" + key
                 const html = generateVerificationEmail(link)
 
                 await sendEmail(user.email, subject, html);
