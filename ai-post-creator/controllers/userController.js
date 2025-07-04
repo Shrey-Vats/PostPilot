@@ -179,3 +179,34 @@ export const getUserProfile = async (req, res) => {
   }
 };
 
+export const updateUser = async (req, res) => {
+  const { role, email } = req.body;
+
+  try {
+    if (req.user?.role !== "admin") {
+      return res.status(403).json({
+        message: "error forbiden",
+        success: false,
+      });
+    }
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(400).json({
+        message: "User does not exit !",
+      });
+    }
+
+    await User.updateOne({ email }, { role });
+
+    return res.status(200).json({
+      message: "User Updated successfuly",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Update failed",
+      success: false,
+    });
+  }
+};
