@@ -21,17 +21,26 @@ export const Signup = async (req, res) => {
         const salt = await bcrypt.genSalt(10)
         const hashedPassword = await bcrypt.hash(password, salt)
 
+        const key = await bcrypt.hash(user_id, 10)
+
         const newUser = await User.create({
           email,
           password: hashedPassword
         })
 
         await inngest.send({
-          name: "user/signup",
+          name: "user/signup-complete",
           data: {
-            email
-          }
-        })
+            email, key
+          },
+        });
+
+        await inngest.send({
+          name: "user/signing-up",
+          data: {
+            email,
+          },
+        });
 
         const token = jwt.sign(
           {
@@ -142,8 +151,8 @@ export const Logout = async (req, res) => {
   }
 }
 
-export const profile = async (req, res) => {
-  const decorded = req.user
+export const getUserProfile = async (req, res) => {
+  const decorded = req.user;
 
   try {
     const user = await User.findOne({ _id: decorded.userId }).select(
@@ -151,21 +160,22 @@ export const profile = async (req, res) => {
     );
 
     if (!user) {
-      res.status(404).json({
+      return res.status(404).json({
         message: "user no longer exits",
         success: false,
       });
     }
 
-    res.status(200).json({
+    return res.status(200).json({
       message: "User Informations:",
       user,
       success: true,
     });
   } catch (error) {
-    res.status(500).json({
-      message: "Invalid User",
-      success: false
-    })
+    return res.status(500).json({
+      message: "User data failed",
+      success: false,
+    });
   }
-}
+};
+
