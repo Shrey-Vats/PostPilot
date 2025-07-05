@@ -40,3 +40,27 @@ export const createPostContent = async (req, res) => {
   }
 }
 
+export const getPosts = async (req, res) => {
+  try {
+    const user = req.user;
+    let posts = [];
+
+    if (user.role !== "user") {
+        posts = await Post.find({})
+          .populate("assignedTo", ["email", "_id"])
+          .sort({ createdAt: -1 });
+    } else {
+        posts = await Post.find({ createdBy: user._id })
+        .select("-assignedTo -createdBy ")
+        .sort({createdAt: -1})
+    }
+
+    return res.status(200).json({posts})
+   
+  } catch (error) {
+    console.error("error on fetching post", error.message);
+    res.status(500).json({
+      message: "Internal server error",
+    });
+  }
+};
