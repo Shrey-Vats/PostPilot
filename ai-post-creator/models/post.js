@@ -8,6 +8,10 @@ const postSchema = new mongoose.Schema({
     required: true,
   },
 
+  assignedTo: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
   dayNumber: {
     type: Number,
     default: 1, // for Devvolution: "Day 24"
@@ -55,7 +59,7 @@ const postSchema = new mongoose.Schema({
   },
   imageDetailing: {
     type: String,
-    default: "medium"
+    default: "medium",
   },
   imageStatus: {
     type: String,
