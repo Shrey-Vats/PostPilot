@@ -1,6 +1,6 @@
 import { inngest } from "../inngest/client.js";
 import Post from "../models/post.js";
-import { createPostSchema } from "../validations/postValidation.js";
+import { createPostSchema } from "../inngest/validations/postValidation.js";
 
 export const createPostContent = async (req, res) => {
   try {
@@ -64,3 +64,15 @@ export const getPosts = async (req, res) => {
     });
   }
 };
+
+export const getPost = async(req, res) => {
+    try {
+       const user = req.user
+        
+    } catch (error) {
+        console.error("error on creatig post", error.message);
+        res.status(500).json({
+          message: "Internal server error",
+        });
+    }
+}
