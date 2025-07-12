@@ -1,6 +1,6 @@
 import { inngest } from "../inngest/client.js";
 import Post from "../models/post.js";
-import { createPostSchema } from "../inngest/validations/postValidation.js";
+import { createPostSchema } from "../validations/postValidation.js";
 
 export const createPostContent = async (req, res) => {
   try {

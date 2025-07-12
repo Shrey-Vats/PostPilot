@@ -1,7 +1,7 @@
 import e from "express";
 
-import { createPostContent, getPosts, getPost } from "../controllers/postController";
-import { authMiddleware } from "../middlewares/authMiddleware";
+import { createPostContent, getPosts, getPost } from "../controllers/postController.js";
+import { authMiddleware } from "../middlewares/authMiddleware.js";
 
 const postRouter = e.Router()
 

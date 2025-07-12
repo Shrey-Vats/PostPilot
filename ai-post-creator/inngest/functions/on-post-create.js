@@ -7,8 +7,8 @@ import analizePost from "../../utils/postWritingAgent.js";
 import { genrateImageFromPost } from "../../utils/imageGenerationAgent.js";
 
 export const onPostCreated = inngest.createFunction(
-  { id: "on-user-signup-complete", retries: 2 },
-  { event: "user/signup-complete" },
+  { id: "on-post-created", retries: 2 },
+  { event: "user/post-created" },
   async ({event, step}) => {
     try {
       const {postId} = event.data

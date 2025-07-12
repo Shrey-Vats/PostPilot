@@ -13,11 +13,11 @@ import { onPostCreated } from "./inngest/functions/on-post-create.js";
 
 const app = e();
 
-app.use(express.urlencoded({ extended: true }));
+app.use(e.urlencoded({ extended: true }));
 app.use(cors());
 app.use(e.json());
 app.use(cookieParser());
-app.use("/auth/*", ExpressAuth({ providers: [] }))
+
 
 app.use("/api/auth", authRoutes);
 app.use("/api/post", postRouter)
