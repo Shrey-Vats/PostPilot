@@ -68,11 +68,35 @@ export const getPosts = async (req, res) => {
 export const getPost = async(req, res) => {
     try {
        const user = req.user
+       let post;
+
+       if(user.role !== 'user'){
+        post = await Post.findById(req.params.id).populate("assignedTo", ["email", "_id"])
+       } else {
+        post = await Post.findOne({
+          createdBy: user._id,
+          _id: req.params._id
+        })
+       }
+
+       if(!post){
+        return res.status(404).json({
+          message: "Post params not found",
+          success: false
+        })
+       }
+
+        return res.status(200).json({
+          post
+        })
         
     } catch (error) {
         console.error("error on creatig post", error.message);
-        res.status(500).json({
-          message: "Internal server error",
-        });
+        res
+          .status(500)
+          .json({
+            message: "Internal server error",
+          })
+          .select("-assignedTo -createdBy");
     }
 }
